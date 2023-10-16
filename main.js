@@ -1,21 +1,44 @@
 import chalk from 'chalk';
 import boxen from 'boxen';
+import readline from 'readline';
 
 function write(text) {
     process.stdout.write(text);
 }
+console.clear();
+readline.emitKeypressEvents(process.stdin);
 
-//for(let i = 0; i<255;i++){
- //   write(chalk.rgb(i,i,i)('#'));
-//}
-//console.log(chalk.italic('hello world'));
-let time = new Date().toLocaleTimeString();
+if(process.stdin.isTTY){
+    process.stdin.setRawMode(true);
+}
 
-write(time);
-setInterval(()=> {
-   write('\x1B[?25l'); //turn cursor invisible
-   write('\x1B[8D'); // A=up B=down C=right D=left
-   time = new Date().toLocaleTimeString();
-   write(time);
-   write('\x1B[?25h'); //turn cursor visible again
-}, 16);
+write('@');
+
+process.stdin.on('keypress', (chunk, key) => {
+    if(key && key.name === 'c' && key.ctrl === true){
+        process.exit();
+    }
+    if(key && key.name === 'd'){
+        write('\x1B[1D');
+        write(' @');
+    }
+    if(key && key.name === 's'){
+        write('\x1B[1D');
+        write(' ');
+        write('\x1B[1D');
+        write('\x1B[1B');
+        write('@');
+    }
+    if(key && key.name === 'a'){
+        write('\x1B[2D');
+        write('@ ');
+        write('\x1B[1D');
+    }
+    if(key && key.name === 'w'){
+        write('\x1B[1D');
+        write(' ');
+        write('\x1B[1D');
+        write('\x1B[1A');
+        write('@');
+    }
+});
