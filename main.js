@@ -1,44 +1,59 @@
-import chalk from 'chalk';
-import boxen from 'boxen';
-import readline from 'readline';
+import inquirer from 'inquirer';
 
 function write(text) {
     process.stdout.write(text);
 }
-console.clear();
-readline.emitKeypressEvents(process.stdin);
+inquirer
+  .prompt([
+    {type:'input', name:'name', message:'What is your name?'},
 
-if(process.stdin.isTTY){
-    process.stdin.setRawMode(true);
-}
+    {
+        type:'list', 
+        name:'gender', 
+        message:'What is your gender?', 
+        choices: ['male', 'female', 'bigender', 'other']
+    },
 
-write('@');
+    {type:'number', name:'age', message:'How old are you?'},
 
-process.stdin.on('keypress', (chunk, key) => {
-    if(key && key.name === 'c' && key.ctrl === true){
-        process.exit();
+    {
+        type:'checkbox', 
+        name:'Mammal', 
+        message:'Which one of them is mammal?',
+        choices: ['Frog',{value:'Pig', checked: true}, 'Chicken'],
+    },
+
+    {
+        type:'rawlist',
+        name:'pizza topping', 
+        message:'Which one of these is your favourite pizza topping?',
+        choices: ['Cheese', 'Olives', 'Pineapple', 'Beef', 'Chicken']
+    },
+
+    {type:'password', name:'password', message:'Enter a password', mask:'*' },
+
+    {
+        type:'confirm', 
+        name:'not a robot', 
+        message:'Confirm that you are not a robot', 
+        choices: ['Y', 'N'] },
+
+    {type:'input', name:'Time', message:'What is the time?'},
+
+    {
+        type:'confirm', 
+        name:'You like school', 
+        message:'Do you like school?', 
+        choices: ['Y', 'N'] 
+    },
+  ])
+  .then((answers) => {
+    console.log(answers);
+  })
+  .catch((error) => {
+    if (error.isTtyError) {
+      // Prompt couldn't be rendered in the current environment
+    } else {
+      // Something else went wrong
     }
-    if(key && key.name === 'd'){
-        write('\x1B[1D');
-        write(' @');
-    }
-    if(key && key.name === 's'){
-        write('\x1B[1D');
-        write(' ');
-        write('\x1B[1D');
-        write('\x1B[1B');
-        write('@');
-    }
-    if(key && key.name === 'a'){
-        write('\x1B[2D');
-        write('@ ');
-        write('\x1B[1D');
-    }
-    if(key && key.name === 'w'){
-        write('\x1B[1D');
-        write(' ');
-        write('\x1B[1D');
-        write('\x1B[1A');
-        write('@');
-    }
-});
+  });
