@@ -1,59 +1,49 @@
-import inquirer from 'inquirer';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
-function write(text) {
-    process.stdout.write(text);
-}
-inquirer
-  .prompt([
-    {type:'input', name:'name', message:'What is your name?'},
-
-    {
-        type:'list', 
-        name:'gender', 
-        message:'What is your gender?', 
-        choices: ['male', 'female', 'bigender', 'other']
-    },
-
-    {type:'number', name:'age', message:'How old are you?'},
-
-    {
-        type:'checkbox', 
-        name:'Mammal', 
-        message:'Which one of them is mammal?',
-        choices: ['Frog',{value:'Pig', checked: true}, 'Chicken'],
-    },
-
-    {
-        type:'rawlist',
-        name:'pizza topping', 
-        message:'Which one of these is your favourite pizza topping?',
-        choices: ['Cheese', 'Olives', 'Pineapple', 'Beef', 'Chicken']
-    },
-
-    {type:'password', name:'password', message:'Enter a password', mask:'*' },
-
-    {
-        type:'confirm', 
-        name:'not a robot', 
-        message:'Confirm that you are not a robot', 
-        choices: ['Y', 'N'] },
-
-    {type:'input', name:'Time', message:'What is the time?'},
-
-    {
-        type:'confirm', 
-        name:'You like school', 
-        message:'Do you like school?', 
-        choices: ['Y', 'N'] 
-    },
-  ])
-  .then((answers) => {
-    console.log(answers);
+const argv = yargs(hideBin(process.argv))
+  .option('value1', {
+    alias: 'v1',
+    describe: 'First operand',
+    demandOption: true,
+    type: 'number',
   })
-  .catch((error) => {
-    if (error.isTtyError) {
-      // Prompt couldn't be rendered in the current environment
-    } else {
-      // Something else went wrong
-    }
-  });
+  .option('value2', {
+    alias: 'v2',
+    describe: 'Second operand',
+    demandOption: true,
+    type: 'number',
+  })
+  .option('sign', {
+    alias: 's',
+    describe: 'Math operation: +, -, *, /',
+    demandOption: true,
+    choices: ['+', '-', '*', '/'],
+  })
+  .help()
+  .argv;
+
+const { value1, value2, sign } = argv;
+
+function performOperation(value1, value2, sign) {
+  switch (sign) {
+    case '+':
+      return value1 + value2;
+    case '-':
+      return value1 - value2;
+    case '*':
+      return value1 * value2;
+    case '/':
+      return value1 / value2;
+    default:
+      throw new Error('Invalid sign');
+  }
+}
+
+try {
+  const result = performOperation(value1, value2, sign);
+  console.log(`${value1} ${sign} ${value2} = ${result}`);
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
